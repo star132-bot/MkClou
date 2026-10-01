@@ -724,7 +724,7 @@ CREATE TABLE audit_logs (
 |---|---|---|---|
 | `mk:sess:{merchantId}:{sessionId}` | Hash | 7 / 30 天 | 会话信息：Refresh Token 哈希、设备、IP、最近活动 |
 | `mk:sess:idx:{merchantId}` | Set | — | 该商家所有会话 ID，用于设备列表和“退出所有设备” |
-| `mk:rt:used:{tokenHash}` | String | 30 天 | 已轮换的 Refresh Token，再次出现即判定被盗 |
+| `mk:rt:used:{tokenHash}` | String | 30 天 | 已轮换的 Refresh Token 及轮换时间；超过 10 秒宽限期后再次出现即判定被盗，吊销该商家全部会话 |
 | `mk:login:fail:{email}` | String | 15 分钟 | 登录失败计数 |
 | `mk:login:lock:{email}` | String | 15 分钟 | 账号锁定标记 |
 | `mk:email:verify:{tokenHash}` | String | 24 小时 | 邮箱验证令牌 → merchantId |
@@ -733,7 +733,9 @@ CREATE TABLE audit_logs (
 | `mk:buyer:sess:{sessionId}` | String | 2 小时 | 买家查单会话 → email |
 | `mk:mail:cooldown:{type}:{email}` | String | 60 秒 | 邮件发送冷却 |
 | `mk:mail:daily:{type}:{email}:{date}` | String | 1 天 | 每日发送次数 |
-| `mk:rl:{rule}:{dimension}` | String / Hash | 按规则 | 限流令牌桶 |
+| `rate:mk:rl:{rule}:{dimension}` | String | 按规则 | 限流（GCRA 算法，`rate:` 前缀由 redis_rate 库自动添加） |
+| `mk:captcha:{id}` | String | 5 分钟 | 图形验证码答案 |
+| `mk:rt:{tokenHash}` | String | 7 / 30 天 | Refresh Token 哈希 → 所属会话（`商家ID:会话ID`） |
 | `mk:lock:order:{orderNo}` | String | 10 秒 | 订单处理分布式锁（SET NX PX + 唯一值，Lua 脚本释放） |
 | `mk:pay:query:{orderNo}` | String | 5 秒 | 主动查询频率限制 |
 | `mk:dl:dedup:{deliveryFileId}:{ip}` | String | 30 秒 | 重复下载不计数 |
@@ -826,3 +828,4 @@ CREATE TABLE audit_logs (
 | 版本 | 日期 | 修改内容 |
 |---|---|---|
 | v0.1 | 2026-10-01 | 初始版本：25 张表、Redis Key 设计、数据流转、容量估算、设计决策 |
+| v0.2 | 2026-10-01 | 实现账号模块时补充 Redis Key：限流实际前缀、图形验证码、Refresh Token 反查；Refresh Token 重放增加 10 秒宽限期 |

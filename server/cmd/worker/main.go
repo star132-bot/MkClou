@@ -10,6 +10,7 @@ import (
 
 	"mkclou/server/internal/pkg/config"
 	"mkclou/server/internal/pkg/logger"
+	"mkclou/server/internal/pkg/mailer"
 )
 
 func main() {
@@ -36,12 +37,14 @@ func run() error {
 		asynq.Config{
 			Concurrency: concurrency,
 			// 交付与支付相关任务优先处理
-			Queues: map[string]int{"critical": 6, "default": 3, "low": 1},
+			Queues:         map[string]int{"critical": 6, "default": 3, "low": 1},
+			RetryDelayFunc: mailer.RetryDelay,
 		},
 	)
 
 	mux := asynq.NewServeMux()
-	// 各模块的任务处理器在开发对应模块时注册，例如：
+	mux.Handle(mailer.TypeSendEmail, mailer.NewHandler(mailer.NewSMTPSender(cfg.Mail), log))
+	// 其他模块的任务处理器在开发对应模块时注册，例如：
 	// mux.HandleFunc(order.TaskClose, orderWorker.HandleClose)
 
 	log.Info("worker starting", zap.Int("concurrency", concurrency))

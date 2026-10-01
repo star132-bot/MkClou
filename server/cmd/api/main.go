@@ -11,11 +11,13 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/hibiken/asynq"
 	"go.uber.org/zap"
 
 	"mkclou/server/internal/pkg/config"
 	"mkclou/server/internal/pkg/database"
 	"mkclou/server/internal/pkg/logger"
+	"mkclou/server/internal/pkg/mailer"
 	"mkclou/server/internal/server"
 )
 
@@ -50,7 +52,12 @@ func run() error {
 	}
 	defer func() { _ = rdb.Close() }()
 
-	router := server.NewRouter(server.Deps{Config: cfg, Log: log, DB: db, Redis: rdb})
+	taskClient := asynq.NewClient(asynq.RedisClientOpt{Addr: cfg.Redis.Addr, Password: cfg.Redis.Password, DB: cfg.Redis.DB})
+	defer func() { _ = taskClient.Close() }()
+
+	router := server.NewRouter(server.Deps{
+		Config: cfg, Log: log, DB: db, Redis: rdb, Mail: mailer.NewAsynqQueue(taskClient),
+	})
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", cfg.App.Port),
 		Handler:           router,

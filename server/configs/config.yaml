@@ -6,6 +6,7 @@ app:
   shutdown_timeout: 10s
   cors_origins:
     - http://localhost:3000
+  public_url: http://localhost:3000
 
 log:
   level: debug
@@ -34,3 +35,22 @@ s3:
   public_bucket: mkclou-public
   private_bucket: mkclou-private
   use_path_style: true
+
+auth:
+  jwt_secret: ""            # 通过 MK_AUTH_JWT_SECRET 提供，至少 32 个字符
+  access_ttl: 15m
+  refresh_ttl: 168h         # 7 天
+  remember_ttl: 720h        # 勾选“记住我”：30 天
+  refresh_cookie: mk_rt
+  cookie_secure: false      # 生产环境必须为 true
+  bcrypt_cost: 12
+  verify_email_ttl: 24h
+  reset_password_ttl: 30m
+
+mail:
+  host: 127.0.0.1           # 本地使用 Mailpit：http://127.0.0.1:8025 查看邮件
+  port: 11025             # Docker Desktop 在本机绑定 1025 端口失败，改用高位端口
+  username: ""
+  password: ""
+  from: "MkClou <no-reply@mkclou.local>"
+  tls: false

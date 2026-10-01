@@ -17,6 +17,8 @@ type Config struct {
 	MySQL MySQLConfig `mapstructure:"mysql"`
 	Redis RedisConfig `mapstructure:"redis"`
 	S3    S3Config    `mapstructure:"s3"`
+	Auth  AuthConfig  `mapstructure:"auth"`
+	Mail  MailConfig  `mapstructure:"mail"`
 }
 
 type AppConfig struct {
@@ -25,6 +27,8 @@ type AppConfig struct {
 	Port            int           `mapstructure:"port"`
 	ShutdownTimeout time.Duration `mapstructure:"shutdown_timeout"`
 	CORSOrigins     []string      `mapstructure:"cors_origins"`
+	// PublicURL 是前端站点地址，用于生成邮件中的链接
+	PublicURL string `mapstructure:"public_url"`
 }
 
 type LogConfig struct {
@@ -65,6 +69,28 @@ type S3Config struct {
 	UsePathStyle  bool   `mapstructure:"use_path_style"`
 }
 
+type AuthConfig struct {
+	JWTSecret        string        `mapstructure:"jwt_secret"`
+	AccessTTL        time.Duration `mapstructure:"access_ttl"`
+	RefreshTTL       time.Duration `mapstructure:"refresh_ttl"`
+	RememberTTL      time.Duration `mapstructure:"remember_ttl"`
+	RefreshCookie    string        `mapstructure:"refresh_cookie"`
+	CookieSecure     bool          `mapstructure:"cookie_secure"`
+	BcryptCost       int           `mapstructure:"bcrypt_cost"`
+	VerifyEmailTTL   time.Duration `mapstructure:"verify_email_ttl"`
+	ResetPasswordTTL time.Duration `mapstructure:"reset_password_ttl"`
+}
+
+type MailConfig struct {
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+	From     string `mapstructure:"from"`
+	// TLS 为 false 时使用明文连接，仅用于本地 Mailpit
+	TLS bool `mapstructure:"tls"`
+}
+
 func (c *Config) IsProduction() bool { return c.App.Env == "production" }
 
 // Load 读取配置。dir 为 config.yaml 所在目录；当前目录存在 .env 时先加载（仅开发环境使用）。
@@ -100,6 +126,9 @@ func (c *Config) validate() error {
 	}
 	if c.Redis.Password == "" {
 		missing = append(missing, "MK_REDIS_PASSWORD")
+	}
+	if len(c.Auth.JWTSecret) < 32 {
+		missing = append(missing, "MK_AUTH_JWT_SECRET (at least 32 characters)")
 	}
 	if len(missing) > 0 {
 		return fmt.Errorf("missing required config: %s", strings.Join(missing, ", "))

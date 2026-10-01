@@ -4,6 +4,7 @@ package response
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -41,6 +42,9 @@ func Error(c *gin.Context, err error) {
 			l.(*zap.Logger).Error("unhandled error", zap.Error(err))
 		}
 		e = errcode.Internal
+	}
+	if d, ok := e.Data.(map[string]int); ok && e.HTTP == http.StatusTooManyRequests {
+		c.Header("Retry-After", strconv.Itoa(d["retryAfter"]))
 	}
 	c.AbortWithStatusJSON(e.HTTP, Body{Code: e.Code, Message: e.Message, Data: e.Data, TraceID: c.GetString(TraceIDKey)})
 }

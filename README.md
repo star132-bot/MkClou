@@ -25,7 +25,7 @@
 
 ## 本地启动
 
-### 1. 启动依赖服务（MySQL、Redis、RustFS）
+### 1. 启动依赖服务（MySQL、Redis、RustFS、Mailpit）
 
 ```bash
 cp deploy/.env.example deploy/.env   # 首次：修改其中的密码
@@ -37,6 +37,7 @@ docker compose -f deploy/docker-compose.yml --env-file deploy/.env up -d
 | MySQL 8.4 | `127.0.0.1:3307` |
 | Redis 7.4 | `127.0.0.1:6380` |
 | RustFS（S3 API / 控制台） | `127.0.0.1:9000` / `127.0.0.1:9001` |
+| Mailpit（SMTP / 查看邮件） | `127.0.0.1:11025` / http://127.0.0.1:8025 |
 
 ### 2. 启动后端
 
@@ -67,6 +68,7 @@ pnpm dev                             # http://localhost:3000
 |---|---|---|
 | server | `go vet ./... && go test ./...` | 静态检查与测试 |
 | server | `go run ./cmd/migrate down 1` | 回滚最近一个迁移 |
+| server | `python scripts/e2e/auth_e2e.py` | 账号模块端到端测试（需先启动 API 与 worker） |
 | web | `pnpm lint` | ESLint 检查 |
 | web | `pnpm exec tsc --noEmit` | 类型检查 |
 | web | `pnpm build` | 生产构建 |
