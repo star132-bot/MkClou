@@ -1,0 +1,26 @@
+-- 回滚初始表结构
+DROP TABLE IF EXISTS audit_logs;
+DROP TABLE IF EXISTS analytics_daily;
+DROP TABLE IF EXISTS analytics_events;
+DROP TABLE IF EXISTS email_logs;
+DROP TABLE IF EXISTS system_configs;
+DROP TABLE IF EXISTS sensitive_words;
+DROP TABLE IF EXISTS reports;
+DROP TABLE IF EXISTS after_sales;
+DROP TABLE IF EXISTS download_records;
+DROP TABLE IF EXISTS delivery_files;
+DROP TABLE IF EXISTS deliveries;
+DROP TABLE IF EXISTS refunds;
+DROP TABLE IF EXISTS payment_notifications;
+DROP TABLE IF EXISTS order_events;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS cards;
+DROP TABLE IF EXISTS product_files;
+DROP TABLE IF EXISTS file_objects;
+DROP TABLE IF EXISTS product_images;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS shop_payment_configs;
+DROP TABLE IF EXISTS shop_slug_redirects;
+DROP TABLE IF EXISTS shops;
+DROP TABLE IF EXISTS admins;
+DROP TABLE IF EXISTS merchants;

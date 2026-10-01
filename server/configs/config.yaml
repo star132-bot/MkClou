@@ -1,0 +1,36 @@
+# 默认配置。密码、密钥等敏感项不要写在这里，通过环境变量（MK_ 前缀）或 server/.env 提供。
+app:
+  name: mkclou
+  env: development
+  port: 8080
+  shutdown_timeout: 10s
+  cors_origins:
+    - http://localhost:3000
+
+log:
+  level: debug
+  format: console
+
+mysql:
+  host: 127.0.0.1
+  port: 3307
+  user: mkclou
+  password: ""
+  database: mkclou
+  max_open_conns: 50
+  max_idle_conns: 10
+  conn_max_lifetime: 30m
+
+redis:
+  addr: 127.0.0.1:6380
+  password: ""
+  db: 0
+
+s3:
+  endpoint: http://127.0.0.1:9000
+  region: us-east-1
+  access_key: ""
+  secret_key: ""
+  public_bucket: mkclou-public
+  private_bucket: mkclou-private
+  use_path_style: true
