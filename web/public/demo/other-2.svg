@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <rect width="1200" height="900" fill="#111113"/>
+  <rect x="120" y="120" width="220" height="660" rx="16" fill="#1A1A1D"/>
+  <g fill="#27272A"><rect x="152" y="170" width="150" height="18" rx="9"/><rect x="152" y="220" width="120" height="18" rx="9"/><rect x="152" y="270" width="140" height="18" rx="9"/></g>
+  <rect x="152" y="320" width="150" height="18" rx="9" fill="#7C7CE6"/>
+  <g fill="#1A1A1D"><rect x="380" y="120" width="320" height="180" rx="16"/><rect x="740" y="120" width="340" height="180" rx="16"/><rect x="380" y="340" width="700" height="440" rx="16"/></g>
+  <polyline points="420,700 520,620 620,650 720,540 820,580 920,470 1040,500" fill="none" stroke="#7C7CE6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <g font-family="system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif" fill="#FAFAFA"><text x="410" y="200" font-size="26" fill="#8B8B94">本月销售额</text><text x="410" y="260" font-size="44" font-weight="600">¥ 12,480</text><text x="770" y="200" font-size="26" fill="#8B8B94">订单数</text><text x="770" y="260" font-size="44" font-weight="600">326</text></g>
+  <text x="120" y="850" font-family="system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="28" fill="#8B8B94">Figma 组件库</text>
+</svg>

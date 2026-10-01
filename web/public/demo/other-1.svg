@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <rect width="1200" height="900" fill="#FAFAFA"/>
+  <g font-family="system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <text x="120" y="180" font-size="44" font-weight="600" fill="#09090B">独立开发者看板</text>
+    <g font-size="26" fill="#71717A"><text x="120" y="290">想法</text><text x="460" y="290">进行中</text><text x="800" y="290">已上线</text></g>
+    <g fill="#FFFFFF" stroke="#E4E4E7" stroke-width="2">
+      <rect x="120" y="320" width="300" height="120" rx="14"/><rect x="120" y="460" width="300" height="120" rx="14"/><rect x="120" y="600" width="300" height="120" rx="14"/>
+      <rect x="460" y="320" width="300" height="120" rx="14"/><rect x="460" y="460" width="300" height="120" rx="14"/>
+      <rect x="800" y="320" width="300" height="120" rx="14"/>
+    </g>
+    <g fill="#E4E4E7"><rect x="150" y="360" width="200" height="16" rx="8"/><rect x="150" y="500" width="160" height="16" rx="8"/><rect x="150" y="640" width="220" height="16" rx="8"/><rect x="490" y="360" width="180" height="16" rx="8"/><rect x="490" y="500" width="230" height="16" rx="8"/></g>
+    <rect x="830" y="360" width="200" height="16" rx="8" fill="#16A34A" opacity="0.5"/>
+    <text x="120" y="820" font-size="28" fill="#71717A">Notion 模板</text>
+  </g>
+</svg>

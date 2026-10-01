@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <rect width="1200" height="900" fill="#ECEEFD"/>
+  <g font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="32" fill="#3E3EAA">
+    <text x="140" y="220">server/</text>
+    <text x="140" y="290">├── cmd/api</text>
+    <text x="140" y="360">├── internal/order</text>
+    <text x="140" y="430">├── internal/payment</text>
+    <text x="140" y="500">├── migrations/</text>
+    <text x="140" y="570">└── deploy/docker-compose.yml</text>
+  </g>
+  <g font-family="system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif"><text x="140" y="740" font-size="48" font-weight="600" fill="#09090B">Go 后端项目模板</text><text x="140" y="800" font-size="28" fill="#52525B">Gin · GORM · 支付回调 · 单元测试</text></g>
+</svg>

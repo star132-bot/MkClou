@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <rect width="1200" height="900" fill="#0B0B0F"/>
+  <rect x="120" y="140" width="960" height="620" rx="24" fill="#141419" stroke="#26262E" stroke-width="2"/>
+  <circle cx="168" cy="188" r="9" fill="#3A3A44"/><circle cx="200" cy="188" r="9" fill="#3A3A44"/><circle cx="232" cy="188" r="9" fill="#3A3A44"/>
+  <line x1="120" y1="236" x2="1080" y2="236" stroke="#26262E" stroke-width="2"/>
+  <g font-family="ui-monospace, SFMono-Regular, Consolas, monospace" font-size="30">
+    <text x="168" y="316" fill="#7C7CE6">$</text><text x="200" y="316" fill="#E4E4E7">claude "重构订单模块，补齐单元测试"</text>
+    <text x="168" y="380" fill="#71717A">› 读取 AGENTS.md 与项目约定 …</text>
+    <text x="168" y="436" fill="#71717A">› 规划 6 个步骤，修改 9 个文件</text>
+    <text x="168" y="492" fill="#4ADE80">✓ go test ./internal/order/...  PASS</text>
+    <text x="168" y="548" fill="#4ADE80">✓ 覆盖率 62% → 87%</text>
+    <text x="168" y="636" fill="#7C7CE6">$</text><rect x="200" y="612" width="16" height="32" fill="#E4E4E7"/>
+  </g>
+  <text x="120" y="830" font-family="system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="34" font-weight="600" fill="#FAFAFA">AI 编程实战包</text>
+  <text x="1080" y="830" text-anchor="end" font-family="system-ui, sans-serif" font-size="26" fill="#71717A">Claude Code · Codex</text>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <rect width="1200" height="900" fill="#F4F4F5"/>
+  <rect x="160" y="120" width="880" height="660" rx="24" fill="#FFFFFF" stroke="#E4E4E7" stroke-width="2"/>
+  <g font-family="system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <text x="216" y="200" font-size="26" fill="#71717A">包含内容</text>
+    <g font-size="32" fill="#09090B">
+      <text x="216" y="290">▸  prompts/          <tspan fill="#71717A">120+ 条场景提示词</tspan></text>
+      <text x="216" y="380">▸  AGENTS.md         <tspan fill="#71717A">6 套技术栈模板</tspan></text>
+      <text x="216" y="470">▸  CLAUDE.md         <tspan fill="#71717A">6 套项目约定</tspan></text>
+      <text x="216" y="560">▸  hooks/             <tspan fill="#71717A">12 个自动化钩子</tspan></text>
+      <text x="216" y="650">▸  使用手册.pdf      <tspan fill="#71717A">86 页</tspan></text>
+    </g>
+  </g>
+  <rect x="160" y="120" width="8" height="660" rx="4" fill="#5B5BD6"/>
+</svg>

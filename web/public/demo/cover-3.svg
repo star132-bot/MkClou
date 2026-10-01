@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <rect width="1200" height="900" fill="#5B5BD6"/>
+  <g font-family="system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif" fill="#FFFFFF">
+    <text x="120" y="250" font-size="40" opacity="0.75">把重复的工作交给 AI</text>
+    <text x="120" y="420" font-size="150" font-weight="600">120+</text>
+    <text x="120" y="490" font-size="40" opacity="0.85">经过真实项目验证的提示词</text>
+    <line x1="120" y1="580" x2="1080" y2="580" stroke="#FFFFFF" stroke-opacity="0.25" stroke-width="2"/>
+    <text x="120" y="680" font-size="36">代码审查 · 重构 · 写测试 · 排查 Bug · 写文档</text>
+    <text x="120" y="760" font-size="30" opacity="0.7">适用于 Claude Code、Codex 与其他 AI 编程工具</text>
+  </g>
+</svg>

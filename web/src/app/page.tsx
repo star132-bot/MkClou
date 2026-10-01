@@ -1,4 +1,5 @@
 import { ArrowRight, Download, ShieldCheck, Wallet } from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
@@ -50,8 +51,8 @@ export default function Home() {
             免费开店
             <ArrowRight data-icon="inline-end" />
           </Button>
-          <Button size="lg" variant="outline">
-            查看示例店铺
+          <Button size="lg" variant="outline" asChild>
+            <Link href="/s/starfield/p/p_7Hk2Qa9xLm3c">查看示例商品</Link>
           </Button>
         </div>
 
