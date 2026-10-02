@@ -2,7 +2,7 @@
 app:
   name: mkclou
   env: development
-  port: 8080
+  port: 18080             # 避开常用的 8080（本机其他 Java 服务常占用）
   shutdown_timeout: 10s
   cors_origins:
     - http://localhost:3000

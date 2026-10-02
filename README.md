@@ -45,11 +45,11 @@ docker compose -f deploy/docker-compose.yml --env-file deploy/.env up -d
 cd server
 cp .env.example .env                 # 首次：填入与 deploy/.env 一致的密码
 go run ./cmd/migrate up              # 执行数据库迁移
-go run ./cmd/api                     # API 服务：http://localhost:8080
+go run ./cmd/api                     # API 服务：http://localhost:18080
 go run ./cmd/worker                  # 异步任务（另开一个终端）
 ```
 
-健康检查：`curl http://localhost:8080/readyz`
+健康检查：`curl http://localhost:18080/readyz`
 
 > 如果编译时出现 `cannot allocate memory`，说明系统可用内存不足，限制并行编译即可：
 > `go env -w GOFLAGS=-p=4`

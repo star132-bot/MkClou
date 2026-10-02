@@ -3,7 +3,7 @@
 # 注意：注册接口按 IP 每小时限 5 次，连续运行前需清理 Redis 中 rate:mk:rl:register:* 键。
 import json, re, time, urllib.request, urllib.error, http.cookiejar, sys
 
-API = "http://127.0.0.1:8080/api/v1"
+API = "http://127.0.0.1:18080/api/v1"
 MAIL = "http://127.0.0.1:8025/api/v1"
 email = f"e2e{int(time.time())}@example.com"
 pw, pw2 = "Passw0rd!", "NewPassw0rd"

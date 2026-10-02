@@ -3,6 +3,7 @@ package captcha
 
 import (
 	"context"
+	"image/color"
 	"strings"
 	"time"
 
@@ -17,9 +18,10 @@ type Service struct {
 }
 
 func New(rdb *redis.Client) *Service {
-	// 4 位数字字母，去除易混淆字符由驱动默认处理
+	// 4 位小写字母与数字，去除 0/o、1/l/i 等易混淆字符；背景使用设计规范的 --muted 色
+	bg := &color.RGBA{R: 0xF4, G: 0xF4, B: 0xF5, A: 0xFF}
 	driver := base64Captcha.NewDriverString(48, 140, 2, base64Captcha.OptionShowHollowLine, 4,
-		"23456789abcdefghjkmnpqrstuvwxyz", nil, nil, nil)
+		"23456789abcdefghjkmnpqrstuvwxyz", bg, nil, nil)
 	return &Service{c: base64Captcha.NewCaptcha(driver, &redisStore{rdb: rdb})}
 }
 
