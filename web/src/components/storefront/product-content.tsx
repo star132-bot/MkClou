@@ -9,15 +9,22 @@ import type { PublicProduct } from "@/lib/storefront/types";
  * 商品详情的结构化区块，由平台统一排版（PRD 03 4.2 分组 3）：
  * 商品介绍（Markdown）→ 包含内容 → 适合谁 → 常见问题 → 购买须知。
  */
+/** 按商品详情的版式渲染 Markdown（白名单：不渲染原始 HTML，见 SEC-05）。编辑页预览也使用它。 */
+export function MarkdownBody({ children }: { children: string }) {
+  return (
+    <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+      {children}
+    </ReactMarkdown>
+  );
+}
+
 export function ProductContent({ product }: { product: PublicProduct }) {
   const { includes, audience, faqs, notice } = product.detail;
 
   return (
     <div className="flex flex-col gap-12">
       <Section title="商品介绍">
-        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-          {product.descriptionMd}
-        </ReactMarkdown>
+        <MarkdownBody>{product.descriptionMd}</MarkdownBody>
       </Section>
 
       {includes.length > 0 && (

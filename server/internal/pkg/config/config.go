@@ -19,6 +19,7 @@ type Config struct {
 	S3    S3Config    `mapstructure:"s3"`
 	Auth  AuthConfig  `mapstructure:"auth"`
 	Mail  MailConfig  `mapstructure:"mail"`
+	Shop  ShopConfig  `mapstructure:"shop"`
 }
 
 type AppConfig struct {
@@ -67,6 +68,8 @@ type S3Config struct {
 	PublicBucket  string `mapstructure:"public_bucket"`
 	PrivateBucket string `mapstructure:"private_bucket"`
 	UsePathStyle  bool   `mapstructure:"use_path_style"`
+	// PublicBaseURL 是公有桶的对外访问地址（生产环境填 CDN 域名）；为空时使用 endpoint/bucket
+	PublicBaseURL string `mapstructure:"public_base_url"`
 }
 
 type AuthConfig struct {
@@ -89,6 +92,17 @@ type MailConfig struct {
 	From     string `mapstructure:"from"`
 	// TLS 为 false 时使用明文连接，仅用于本地 Mailpit
 	TLS bool `mapstructure:"tls"`
+}
+
+type ShopConfig struct {
+	// ReservedSlugs 是不能用作店铺链接的保留词（PRD SHOP-01）
+	ReservedSlugs []string `mapstructure:"reserved_slugs"`
+	// SlugChangeInterval 是两次修改店铺链接的最短间隔（PRD SHOP-02：30 天）
+	SlugChangeInterval time.Duration `mapstructure:"slug_change_interval"`
+	// SlugRedirectTTL 是旧链接跳转到新链接的保留时长（PRD SHOP-02：90 天）
+	SlugRedirectTTL time.Duration `mapstructure:"slug_redirect_ttl"`
+	// PublicCacheTTL 是买家端店铺信息的缓存时长（数据库设计 4：5 分钟）
+	PublicCacheTTL time.Duration `mapstructure:"public_cache_ttl"`
 }
 
 func (c *Config) IsProduction() bool { return c.App.Env == "production" }

@@ -1,26 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import type { CSSProperties } from "react";
+import { notFound, permanentRedirect } from "next/navigation";
 
+import { FavoriteButton } from "@/components/market/favorite-button";
 import { ProductCard } from "@/components/storefront/product-card";
 import { ProductContent } from "@/components/storefront/product-content";
 import { ProductGallery } from "@/components/storefront/product-gallery";
 import { PurchasePanel } from "@/components/storefront/purchase-panel";
 import { SellerCard, ShopTopBar, StoreFooter, TestModeBanner } from "@/components/storefront/shop-chrome";
+import { ShopThemeScope } from "@/components/storefront/shop-theme-scope";
 import { Button } from "@/components/ui/button";
-import { type DemoScenario, getProductPage } from "@/lib/storefront/mock";
 import { getPurchaseState } from "@/lib/storefront/purchase-state";
+import { fetchProductPage } from "@/lib/storefront/server";
 
 type Props = PageProps<"/s/[slug]/p/[productId]">;
 
-const scenarios: DemoScenario[] = ["default", "soldout", "paused", "unavailable", "card", "offsale"];
-
 async function load(props: Props) {
-  const { slug, productId } = await props.params;
-  const { demo } = await props.searchParams;
-  const scenario = scenarios.find((s) => s === demo) ?? "default";
-  return getProductPage(slug, productId, scenario);
+  const { productId } = await props.params;
+  return fetchProductPage(productId);
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
@@ -33,7 +30,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     openGraph: {
       title: product.name,
       description: product.tagline,
-      images: [{ url: product.cover.url, width: product.cover.width, height: product.cover.height }],
+      images: product.cover?.url ? [{ url: product.cover.url, width: product.cover.width, height: product.cover.height }] : undefined,
     },
   };
 }
@@ -43,12 +40,13 @@ export default async function ProductPage(props: Props) {
   if (!data) notFound();
 
   const { shop, product, moreFromShop } = data;
-  // 店铺主题色只影响品牌色（链接、焦点环、强调），主按钮保持近黑色（设计规范 3.2）
-  const themeStyle = { "--brand": shop.theme.color } as CSSProperties;
+  // 店铺修改过链接，或链接与商品所属店铺不一致时，跳转到正确的地址
+  const { slug } = await props.params;
+  if (slug !== shop.slug) permanentRedirect(`/s/${shop.slug}/p/${product.publicId}`);
 
   if (product.status !== "ON_SALE") {
     return (
-      <div style={themeStyle} className="flex flex-1 flex-col">
+      <ShopThemeScope theme={shop.theme}>
         <ShopTopBar shop={shop} />
         <main className="mx-auto flex w-full max-w-[480px] flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
           <h1 className="text-h2">商品已下架</h1>
@@ -58,14 +56,14 @@ export default async function ProductPage(props: Props) {
           </Button>
         </main>
         <StoreFooter reportHref={`/report?productId=${product.publicId}`} />
-      </div>
+      </ShopThemeScope>
     );
   }
 
   const purchaseState = getPurchaseState(shop, product);
 
   return (
-    <div style={themeStyle} className="flex flex-1 flex-col">
+    <ShopThemeScope theme={shop.theme}>
       {shop.isTestMode && <TestModeBanner />}
       <ShopTopBar shop={shop} />
 
@@ -80,6 +78,12 @@ export default async function ProductPage(props: Props) {
             <div className="flex flex-col gap-2">
               <h1 className="text-h2">{product.name}</h1>
               {product.tagline && <p className="text-body-lg">{product.tagline}</p>}
+              <div className="mt-1 flex items-center gap-3">
+                <FavoriteButton publicId={product.publicId} variant="inline" />
+                {product.favoriteCount > 0 && (
+                  <span className="text-caption text-text-tertiary tabular-nums">{product.favoriteCount} 人收藏</span>
+                )}
+              </div>
             </div>
             <PurchasePanel product={product} state={purchaseState} />
           </div>
@@ -103,6 +107,6 @@ export default async function ProductPage(props: Props) {
       </main>
 
       <StoreFooter reportHref={`/report?productId=${product.publicId}`} />
-    </div>
+    </ShopThemeScope>
   );
 }

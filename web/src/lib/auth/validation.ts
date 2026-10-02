@@ -52,7 +52,8 @@ export function suggestEmail(email: string): string | null {
 }
 
 /** 登录后跳转地址只允许站内相对路径，防止开放重定向（PRD SEC-05）。 */
-export function safeRedirect(target: string | null, fallback = "/dashboard"): string {
+/** 默认回到商城首页（PRD MKT 4.8）。 */
+export function safeRedirect(target: string | null | undefined, fallback = "/"): string {
   if (!target || !target.startsWith("/") || target.startsWith("//") || target.startsWith("/\\")) return fallback;
   return target;
 }

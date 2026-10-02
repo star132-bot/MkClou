@@ -57,3 +57,24 @@ var (
 	CodeInvalid      = newErr(20008, http.StatusBadRequest, "验证码错误")
 	Forbidden        = newErr(20403, http.StatusForbidden, "无权访问")
 )
+
+// 店铺 30000-39999
+var (
+	SlugUnavailable    = newErr(30001, http.StatusConflict, "该店铺链接不可用")
+	SlugChangeTooSoon  = newErr(30002, http.StatusConflict, "店铺链接 30 天内只能修改一次")
+	ShopNotCreated     = newErr(30003, http.StatusNotFound, "请先创建店铺")
+	PaymentTestFailed  = newErr(30004, http.StatusBadRequest, "收款配置测试失败")
+	ShopPaused         = newErr(30005, http.StatusConflict, "店铺暂停营业中")
+	PaymentUnavailable = newErr(30006, http.StatusConflict, "店铺收款未配置或已失效")
+)
+
+// 商品 40000-49999
+var (
+	PublishCheckFailed   = newErr(40001, http.StatusUnprocessableEntity, "还有内容需要完善才能上架")
+	ProductUnavailable   = newErr(40002, http.StatusConflict, "商品暂时无法购买")
+	ProductHasOrders     = newErr(40003, http.StatusConflict, "该商品已有订单，无法删除，可以选择下架")
+	DeliveryTypeLocked   = newErr(40004, http.StatusConflict, "商品上架后不能修改交付类型，如需修改请复制商品")
+	ContentBlocked       = newErr(40005, http.StatusBadRequest, "内容包含违规词，请修改后再提交")
+	FileUploadIncomplete = newErr(40006, http.StatusConflict, "文件尚未上传完成")
+	CardPrecheckExpired  = newErr(40007, http.StatusConflict, "卡密导入预检已过期，请重新导入")
+)

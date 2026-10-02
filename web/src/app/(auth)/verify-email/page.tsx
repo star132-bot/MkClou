@@ -56,7 +56,7 @@ function VerifyEmail() {
           <CircleX className="size-6 text-danger" strokeWidth={1.5} aria-hidden />
           <p>登录后，可以在后台顶部的提示条中重新发送验证邮件。</p>
           <Button size="lg" className="w-full" asChild>
-            <Link href="/dashboard">进入后台</Link>
+            <Link href="/dashboard">进入卖家中心</Link>
           </Button>
         </div>
       </AuthShell>
@@ -69,7 +69,7 @@ function VerifyEmail() {
         <CircleCheck className="size-6 text-success" strokeWidth={1.5} aria-hidden />
         <p>现在可以上架商品了。</p>
         <Button size="lg" className="w-full" asChild>
-          <Link href="/dashboard">进入后台</Link>
+          <Link href="/dashboard">进入卖家中心</Link>
         </Button>
       </div>
     </AuthShell>
