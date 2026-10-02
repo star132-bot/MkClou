@@ -1,3 +1,4 @@
+import { ImageIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -22,17 +23,21 @@ export function ProductCard({ shopSlug, product, ratio }: { shopSlug: string; pr
       className="group flex flex-col gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4"
     >
       <div className={cn("relative overflow-hidden rounded-lg border border-border bg-muted", ratioClass[ratio])}>
-        <Image
-          src={product.cover.url}
-          alt={product.cover.alt}
-          fill
-          sizes="(min-width: 1024px) 340px, (min-width: 640px) 50vw, 100vw"
-          unoptimized
-          className={cn(
-            "object-cover transition-transform duration-200 ease-out group-hover:scale-[1.03]",
-            product.soldOut && "opacity-60",
-          )}
-        />
+        {product.cover.url ? (
+          <Image
+            src={product.cover.url}
+            alt={product.cover.alt}
+            fill
+            sizes="(min-width: 1024px) 340px, (min-width: 640px) 50vw, 100vw"
+            unoptimized
+            className={cn(
+              "object-cover transition-transform duration-200 ease-out group-hover:scale-[1.03]",
+              product.soldOut && "opacity-60",
+            )}
+          />
+        ) : (
+          <ImageIcon className="absolute inset-0 m-auto size-6 text-text-tertiary" strokeWidth={1.5} aria-hidden />
+        )}
         {badge && (
           <span className="absolute top-3 left-3 rounded-sm bg-background/90 px-2 py-0.5 text-caption font-medium text-text-primary">
             {badge}

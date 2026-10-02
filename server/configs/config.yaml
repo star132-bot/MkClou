@@ -35,6 +35,7 @@ s3:
   public_bucket: mkclou-public
   private_bucket: mkclou-private
   use_path_style: true
+  public_base_url: ""     # 生产环境填 CDN 域名；为空时为 endpoint/public_bucket
 
 auth:
   jwt_secret: ""            # 通过 MK_AUTH_JWT_SECRET 提供，至少 32 个字符
@@ -54,3 +55,32 @@ mail:
   password: ""
   from: "MkClou <no-reply@mkclou.local>"
   tls: false
+
+shop:
+  slug_change_interval: 720h   # 30 天
+  slug_redirect_ttl: 2160h     # 90 天
+  public_cache_ttl: 5m
+  reserved_slugs:
+    - admin
+    - api
+    - app
+    - assets
+    - checkout
+    - dashboard
+    - docs
+    - help
+    - login
+    - logout
+    - mail
+    - mkclou
+    - onboarding
+    - orders
+    - pay
+    - register
+    - root
+    - shop
+    - static
+    - status
+    - support
+    - system
+    - www

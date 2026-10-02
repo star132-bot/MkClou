@@ -18,6 +18,7 @@ import (
 	"mkclou/server/internal/pkg/database"
 	"mkclou/server/internal/pkg/logger"
 	"mkclou/server/internal/pkg/mailer"
+	"mkclou/server/internal/pkg/storage"
 	"mkclou/server/internal/server"
 )
 
@@ -55,8 +56,16 @@ func run() error {
 	taskClient := asynq.NewClient(asynq.RedisClientOpt{Addr: cfg.Redis.Addr, Password: cfg.Redis.Password, DB: cfg.Redis.DB})
 	defer func() { _ = taskClient.Close() }()
 
+	store := storage.New(cfg.S3)
+	// 创建存储桶并设置公有桶匿名只读；失败时只记录日志，不阻止启动（图片上传会失败并返回错误）
+	bucketCtx, cancelBuckets := context.WithTimeout(context.Background(), 10*time.Second)
+	if err := store.EnsureBuckets(bucketCtx); err != nil {
+		log.Warn("ensure storage buckets failed", zap.Error(err))
+	}
+	cancelBuckets()
+
 	router := server.NewRouter(server.Deps{
-		Config: cfg, Log: log, DB: db, Redis: rdb, Mail: mailer.NewAsynqQueue(taskClient),
+		Config: cfg, Log: log, DB: db, Redis: rdb, Mail: mailer.NewAsynqQueue(taskClient), Store: store,
 	})
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", cfg.App.Port),

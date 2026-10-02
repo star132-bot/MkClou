@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"net/http"
 	"strings"
 	"time"
@@ -19,15 +20,21 @@ type CaptchaGenerator interface {
 	Generate() (id, image string, err error)
 }
 
+// ShopSummaries 提供 /me 中的店铺概要，由店铺模块实现；商家未创建店铺时返回 nil。
+type ShopSummaries interface {
+	SummaryOf(ctx context.Context, merchantID uint64) (any, error)
+}
+
 type Handler struct {
 	svc     *Service
 	captcha CaptchaGenerator
 	limiter *ratelimit.Limiter
 	cfg     config.AuthConfig
+	shops   ShopSummaries
 }
 
-func NewHandler(svc *Service, captcha CaptchaGenerator, limiter *ratelimit.Limiter, cfg config.AuthConfig) *Handler {
-	return &Handler{svc: svc, captcha: captcha, limiter: limiter, cfg: cfg}
+func NewHandler(svc *Service, captcha CaptchaGenerator, limiter *ratelimit.Limiter, cfg config.AuthConfig, shops ShopSummaries) *Handler {
+	return &Handler{svc: svc, captcha: captcha, limiter: limiter, cfg: cfg, shops: shops}
 }
 
 // Register 注册路由（接口清单 #1 ～ #15）。
@@ -246,13 +253,18 @@ func (h *Handler) resetPassword(c *gin.Context) {
 }
 
 func (h *Handler) me(c *gin.Context) {
-	m, err := h.svc.Me(c.Request.Context(), identity(c).MerchantID)
+	mid := identity(c).MerchantID
+	m, err := h.svc.Me(c.Request.Context(), mid)
 	if err != nil {
 		response.Error(c, err)
 		return
 	}
-	// shop 字段在店铺模块完成后填充（接口清单 #10）
-	response.OK(c, gin.H{"merchant": m.View(), "shop": nil})
+	shop, err := h.shops.SummaryOf(c.Request.Context(), mid)
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.OK(c, gin.H{"merchant": m.View(), "shop": shop})
 }
 
 func (h *Handler) updateMe(c *gin.Context) {

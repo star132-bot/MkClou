@@ -24,5 +24,6 @@ func New(level, format string) (*zap.Logger, error) {
 	cfg.EncoderConfig.TimeKey = "time"
 	cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 
-	return cfg.Build()
+	// 开发配置默认给 Warn 级别附带堆栈，4xx 请求日志会被误看成程序崩溃；只在 Error 及以上附带堆栈
+	return cfg.Build(zap.AddStacktrace(zapcore.ErrorLevel))
 }

@@ -8,15 +8,17 @@ import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = { title: "登录" };
 
-export default function LoginPage() {
+export default async function LoginPage({ searchParams }: PageProps<"/login">) {
+  const { redirect } = await searchParams;
+  const query = typeof redirect === "string" ? `?redirect=${encodeURIComponent(redirect)}` : "";
   return (
     <AuthShell
       title="登录 MkClou"
-      description="管理你的店铺、商品和订单"
+      description="收藏喜欢的作品，或管理你的店铺"
       footer={
         <>
           还没有账号？
-          <Link href="/register" className="font-medium text-text-primary underline-offset-4 hover:underline">
+          <Link href={`/register${query}`} className="font-medium text-text-primary underline-offset-4 hover:underline">
             免费注册
           </Link>
         </>

@@ -16,17 +16,31 @@ export interface ShopTheme {
   mode: "light" | "dark" | "system";
 }
 
+export type SocialType = "website" | "github" | "bilibili" | "xiaohongshu" | "weibo" | "douyin" | "x" | "youtube";
+
+export interface SocialLink {
+  type: SocialType;
+  url: string;
+}
+
 export interface PublicShop {
   slug: string;
   name: string;
   description: string;
   avatarUrl: string | null;
+  coverUrl: string | null;
   contactEmail: string;
-  socialLinks: { type: string; url: string }[];
+  socialLinks: SocialLink[];
   theme: ShopTheme;
   status: ShopStatus;
   pauseNote: string | null;
   isTestMode: boolean;
+}
+
+/** GET /public/shops/{slug}：店铺信息，或旧链接需要跳转到的新链接（PRD 02 3.2）。 */
+export interface PublicShopResult {
+  shop: PublicShop | null;
+  redirectTo: string | null;
 }
 
 export interface ProductImage {
@@ -49,6 +63,24 @@ export interface ProductSummary {
   cover: ProductImage;
   soldOut: boolean;
   isNew: boolean;
+  favoriteCount: number;
+}
+
+/** 商城中的商品卡片：商品摘要 + 所属店铺（PRD MKT-01）。 */
+export interface MarketCard extends ProductSummary {
+  shop: { slug: string; name: string };
+}
+
+export interface MarketHome {
+  hot: MarketCard[];
+  latest: MarketCard[];
+}
+
+export interface MarketSearchResult {
+  items: MarketCard[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
 
 export interface PublicProduct extends ProductSummary {

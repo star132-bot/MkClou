@@ -33,6 +33,7 @@ export class ApiError extends Error {
 export const ErrorCode = {
   InvalidParams: 10001,
   TooManyRequests: 10002,
+  StateConflict: 10004,
   Unauthorized: 20000,
   BadCredentials: 20001,
   CaptchaRequired: 20002,
@@ -41,6 +42,13 @@ export const ErrorCode = {
   TokenInvalid: 20005,
   AccountDisabled: 20006,
   EmailRegistered: 20007,
+  SlugUnavailable: 30001,
+  SlugChangeTooSoon: 30002,
+  ShopNotCreated: 30003,
+  VersionConflict: 10005,
+  PublishCheckFailed: 40001,
+  ProductHasOrders: 40003,
+  DeliveryTypeLocked: 40004,
 } as const;
 
 interface RequestOptions {
@@ -52,7 +60,9 @@ interface RequestOptions {
 
 async function send<T>(path: string, { method = "GET", body, auth = true }: RequestOptions): Promise<T> {
   const headers: Record<string, string> = {};
-  if (body !== undefined) headers["Content-Type"] = "application/json";
+  // FormData（文件上传）由浏览器自动设置 multipart 边界
+  const isForm = typeof FormData !== "undefined" && body instanceof FormData;
+  if (body !== undefined && !isForm) headers["Content-Type"] = "application/json";
   const token = useAuthStore.getState().accessToken;
   if (auth && token) headers.Authorization = `Bearer ${token}`;
 
@@ -61,7 +71,7 @@ async function send<T>(path: string, { method = "GET", body, auth = true }: Requ
     res = await fetch(BASE + path, {
       method,
       headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
       credentials: "same-origin",
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });

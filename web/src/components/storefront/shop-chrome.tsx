@@ -12,12 +12,28 @@ const avatarSizes = {
   lg: "size-12 text-h3",
 };
 
-export function ShopAvatar({ shop, size = "md" }: { shop: PublicShop; size?: keyof typeof avatarSizes }) {
+export function ShopAvatar({
+  shop,
+  size = "md",
+}: {
+  shop: Pick<PublicShop, "name" | "avatarUrl">;
+  size?: keyof typeof avatarSizes | "xl";
+}) {
+  if (shop.avatarUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- 对象存储中的头像，尺寸很小，无需 next/image 优化
+      <img
+        src={shop.avatarUrl}
+        alt=""
+        className={cn("shrink-0 rounded-full border border-border object-cover", size === "xl" ? "size-20" : avatarSizes[size])}
+      />
+    );
+  }
   return (
     <span
       className={cn(
         "inline-flex shrink-0 items-center justify-center rounded-full bg-brand font-semibold text-brand-foreground",
-        avatarSizes[size],
+        size === "xl" ? "size-20 text-h1" : avatarSizes[size],
       )}
       aria-hidden
     >

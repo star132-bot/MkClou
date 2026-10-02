@@ -42,7 +42,7 @@ export function PurchasePanel({ product, state }: PurchasePanelProps) {
   }, []);
 
   const handleBuy = () => {
-    toast.info("演示模式：结账页将在订单模块完成后接入", {
+    toast.info("结账功能即将开放", {
       description: `${product.name} × ${qty}`,
     });
   };

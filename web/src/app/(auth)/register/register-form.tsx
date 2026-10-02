@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { ApiError, ErrorCode } from "@/lib/api/client";
 import { authApi } from "@/lib/auth/api";
 import { useAuthStore } from "@/lib/auth/store";
-import { emailSchema, passwordSchema, suggestEmail } from "@/lib/auth/validation";
+import { emailSchema, passwordSchema, safeRedirect, suggestEmail } from "@/lib/auth/validation";
 
 const schema = z
   .object({
@@ -31,6 +31,7 @@ type FormValues = z.infer<typeof schema>;
 
 export function RegisterForm() {
   const router = useRouter();
+  const redirectTo = safeRedirect(useSearchParams().get("redirect"));
   const signIn = useAuthStore((s) => s.signIn);
   const [formError, setFormError] = useState<React.ReactNode>(null);
 
@@ -56,8 +57,7 @@ export function RegisterForm() {
     try {
       const r = await authApi.register({ ...values, email: values.email.trim() });
       signIn(r.accessToken, r.merchant);
-      // 店铺模块完成后改为跳转创建店铺向导 /onboarding（PRD SHOP-01）
-      router.replace("/dashboard");
+      router.replace(redirectTo); // 回到来源页或商城首页，开店改为主动入口（PRD MKT 4.8）
     } catch (e) {
       if (!(e instanceof ApiError)) throw e;
       if (e.code === ErrorCode.EmailRegistered) {
