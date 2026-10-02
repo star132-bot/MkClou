@@ -1,6 +1,6 @@
 # MkClou
 
-给独立创作者和小商家的虚拟商品店铺 SaaS：钱直接进商家自己的账户，平台不抽成，店铺有品牌感。
+独立创作者的数字作品商城：买家在商城发现、搜索、收藏作品；任何用户都可以开店上架。钱直接进卖家自己的账户，平台不抽成，店铺有品牌感。
 
 ## 目录结构
 
@@ -54,7 +54,14 @@ go run ./cmd/worker                  # 异步任务（另开一个终端）
 > 如果编译时出现 `cannot allocate memory`，说明系统可用内存不足，限制并行编译即可：
 > `go env -w GOFLAGS=-p=4`
 
-### 3. 启动前端
+### 3. （可选）生成本地演示数据
+
+```bash
+cd server
+go run ./cmd/seed-demo               # 4 个演示店铺、12 个已上架商品；可重复执行，生产环境拒绝运行
+```
+
+### 4. 启动前端
 
 ```bash
 cd web
@@ -69,6 +76,9 @@ pnpm dev                             # http://localhost:3000
 | server | `go vet ./... && go test ./...` | 静态检查与测试 |
 | server | `go run ./cmd/migrate down 1` | 回滚最近一个迁移 |
 | server | `python scripts/e2e/auth_e2e.py` | 账号模块端到端测试（需先启动 API 与 worker） |
+| server | `python scripts/e2e/shop_e2e.py` | 店铺模块端到端测试（需先启动 API） |
+| server | `python scripts/e2e/product_e2e.py` | 商品模块端到端测试（需先启动 API 与 worker） |
+| server | `python scripts/e2e/market_e2e.py` | 商城首页、搜索、收藏端到端测试（需先启动 API 与 worker） |
 | web | `pnpm lint` | ESLint 检查 |
 | web | `pnpm exec tsc --noEmit` | 类型检查 |
 | web | `pnpm build` | 生产构建 |

@@ -185,6 +185,7 @@ CREATE TABLE shops (
   status          VARCHAR(20)     NOT NULL DEFAULT 'OPEN' COMMENT 'OPEN / PAUSED / BANNED',
   pause_note      VARCHAR(200)    NULL,
   slug_changed_at DATETIME(3)     NULL     COMMENT '用于限制 30 天改一次',
+  shared_at       DATETIME(3)     NULL     COMMENT '首次分享店铺的时间，用于新手清单',
   created_at      DATETIME(3)     NOT NULL,
   updated_at      DATETIME(3)     NOT NULL,
   PRIMARY KEY (id),
@@ -243,6 +244,7 @@ CREATE TABLE products (
   price               INT UNSIGNED     NOT NULL COMMENT '分；0 表示免费',
   original_price      INT UNSIGNED     NULL     COMMENT '划线价，分',
   delivery_type       VARCHAR(20)      NOT NULL COMMENT 'FILE / LINK / TEXT / CARD',
+  category            VARCHAR(20)      NULL     COMMENT '平台一级分类（MKT-04），上架时必填',
   status              VARCHAR(20)      NOT NULL DEFAULT 'DRAFT'
                       COMMENT 'DRAFT / PENDING_REVIEW / ON_SALE / OFF_SALE / BANNED',
   description_md      TEXT             NULL     COMMENT '商品介绍 Markdown',
@@ -253,6 +255,7 @@ CREATE TABLE products (
   low_stock_threshold SMALLINT UNSIGNED NOT NULL DEFAULT 5,
   stock_available     INT UNSIGNED     NOT NULL DEFAULT 0  COMMENT '卡密可售数量（冗余计数）',
   sales_count         INT UNSIGNED     NOT NULL DEFAULT 0  COMMENT '累计销量（冗余计数）',
+  favorite_count      INT UNSIGNED     NOT NULL DEFAULT 0  COMMENT '收藏人数（冗余计数）',
   sort_order          INT              NOT NULL DEFAULT 0,
   ban_reason          VARCHAR(500)     NULL,
   version             INT UNSIGNED     NOT NULL DEFAULT 1  COMMENT '乐观锁',
@@ -262,10 +265,14 @@ CREATE TABLE products (
   deleted_at          DATETIME(3)      NULL,
   PRIMARY KEY (id),
   UNIQUE KEY uk_public_id (public_id),
-  KEY idx_shop_status_sort (shop_id, status, sort_order)
+  KEY idx_shop_status_sort (shop_id, status, sort_order),
+  KEY idx_status_published (status, published_at),
+  KEY idx_status_category_published (status, category, published_at),
+  FULLTEXT KEY ft_name_tagline (name, tagline) WITH PARSER ngram
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品';
 ```
 - `name VARCHAR(120)`：PRD 限制 60 字符，这里留出余量，长度由应用层校验。
+- 商城索引（v0.4）：`idx_status_published` 用于首页“最新上架”，`idx_status_category_published` 用于分类浏览；`ft_name_tagline` 使用 ngram 分词支持中文搜索（MKT-02）。
 - `detail` 示例：
   ```json
   {"includes":["3 套 Figma 模板"],"audience":"…","faqs":[{"q":"…","a":"…"}],"notice":"…"}
@@ -278,6 +285,22 @@ CREATE TABLE products (
   ```
 - **冗余计数** `stock_available`、`sales_count`：列表页需要展示，如果每次都 `COUNT(*)` 卡密表会很慢。它们在卡密导入、预占、释放、售出的**同一个事务**中更新，保证一致；另有每日校准任务兜底。
 - **乐观锁** `version`：编辑保存时 `UPDATE … WHERE id=? AND version=?`，影响行数为 0 说明已被其他页面修改（PRD 03 第 5 节）。
+
+#### favorites 商品收藏
+```sql
+CREATE TABLE favorites (
+  id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  merchant_id BIGINT UNSIGNED NOT NULL COMMENT '收藏者账号',
+  product_id  BIGINT UNSIGNED NOT NULL,
+  created_at  DATETIME(3)     NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_merchant_product (merchant_id, product_id),
+  KEY idx_merchant_created (merchant_id, created_at),
+  KEY idx_product_created (product_id, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='商品收藏';
+```
+- v1.1 统一账号（PRD MKT-08）后，`merchants` 表即全部用户的账号表，收藏者用 `merchant_id` 表示。
+- `products.favorite_count` 与收藏记录在同一事务中增减（`INSERT IGNORE` 判断是否新增），商品卡片直接读取。
 
 #### product_images 商品封面图
 ```sql
@@ -740,6 +763,8 @@ CREATE TABLE audit_logs (
 | `mk:pay:query:{orderNo}` | String | 5 秒 | 主动查询频率限制 |
 | `mk:dl:dedup:{deliveryFileId}:{ip}` | String | 30 秒 | 重复下载不计数 |
 | `mk:shop:{slug}` | String（JSON） | 5 分钟 | 店铺页缓存 |
+| `mk:upload:img:{key}` | String | 24 小时 | 上传图片的所属店铺；保存商品时只接受本店铺上传的图片，被引用后删除 |
+| `mk:market:hot` | ZSet | — | 热门商品榜单：商品 ID → 热度（近 7 天成交 × 3 + 近 7 天收藏），worker 每小时重算后原子替换（MKT-03） |
 | `mk:product:{publicId}` | String（JSON） | 5 分钟 | 商品详情缓存 |
 | `mk:dash:{shopId}:{range}` | String（JSON） | 5 分钟 | 后台概览指标缓存 |
 | `mk:uv:{shopId}:{date}` | HyperLogLog | 2 天 | 当日店铺 UV（误差约 0.81%，每个 Key 仅 12KB） |
@@ -829,3 +854,6 @@ CREATE TABLE audit_logs (
 |---|---|---|
 | v0.1 | 2026-10-01 | 初始版本：25 张表、Redis Key 设计、数据流转、容量估算、设计决策 |
 | v0.2 | 2026-10-01 | 实现账号模块时补充 Redis Key：限流实际前缀、图形验证码、Refresh Token 反查；Refresh Token 重放增加 10 秒宽限期 |
+| v0.3 | 2026-10-02 | 实现店铺模块：`shops` 新增 `shared_at`（新手清单“分享店铺”，迁移 000002） |
+| v0.5 | 2026-10-02 | 新增 `favorites` 表与 `products.favorite_count`（迁移 000004）；全文索引关闭停用词后重建，修复 ngram 下“AI”“UI”等词搜不到（迁移 000005）；Redis 新增 `mk:market:hot` |
+| v0.4 | 2026-10-02 | 商城化调整：`products` 新增 `category`、商城列表索引与 ngram 全文索引（迁移 000003）；Redis 新增 `mk:upload:img:{key}`（图片归属，24 小时） |

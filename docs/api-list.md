@@ -173,6 +173,18 @@
 | 74 | GET | `/public/products/{publicId}` | 🌐 | 商品详情（含可售状态、库存提示）；携带 `?previewToken=` 时可查看未上架商品 | SF-02、PRD-09 |
 | 75 | POST | `/public/events` | 🌐 | 批量上报埋点事件（最多 20 条） | SF-06 |
 | 76 | POST | `/public/reports` | 🌐 | 举报商品 | ADM-05 |
+| 76a | GET | `/public/categories` | 🌐 | 平台一级分类列表 | MKT-04 |
+
+### 2.7a 商城与收藏
+
+| # | 方法 | 路径 | 鉴权 | 说明 | 需求 |
+|---|---|---|---|---|---|
+| 76b | GET | `/public/market/home` | 🌐 | 首页：热门 8 个（不足用最新补齐）+ 最新上架 12 个 | MKT-01、MKT-03 |
+| 76c | GET | `/public/market/search` | 🌐 | 搜索：`q`、`category`、`price`（free / 0-50 / 50-200 / 200+）、`sort`（sales / latest / price_asc / price_desc）、`page`，每页 24 个 | MKT-02 |
+| 76d | GET | `/me/favorites` | 🔑 | 我的收藏（分页，失效商品标注 `available=false`） | MKT-06 |
+| 76e | GET | `/me/favorites/status?ids=` | 🔑 | 批量查询商品是否已收藏（最多 100 个） | MKT-05 |
+| 76f | PUT | `/me/favorites/{publicId}` | 🔑 | 收藏（幂等），返回最新收藏人数 | MKT-05 |
+| 76g | DELETE | `/me/favorites/{publicId}` | 🔑 | 取消收藏（幂等，失效商品也可取消） | MKT-05 |
 
 ### 2.8 买家端：下单与订单
 
@@ -262,6 +274,7 @@
 | `cron:analytics-flush` | 每 5 秒 | 批量写入埋点事件 | SF-06 |
 | `cron:analytics-rollup` | 每小时 / 每日凌晨 | 汇总每日统计 | DSB-03 |
 | `cron:stock-reconcile` | 每日凌晨 | 校准商品的可售库存、销量冗余计数 | PRD-07 |
+| `cron:market-hot` | 每小时（worker 启动时也执行一次） | 重算热门商品榜单 `mk:market:hot` | MKT-03 |
 | `cron:cleanup` | 每日凌晨 | 清理过期数据（埋点 90 天、回调报文 180 天、邮件记录 90 天）、未完成的上传、无引用的文件对象 | SEC-10 |
 
 ---
@@ -292,3 +305,5 @@
 | 版本 | 日期 | 修改内容 |
 |---|---|---|
 | v0.1 | 2026-10-01 | 初始版本：114 个接口、12 个异步任务；支付回调路径去掉店铺 ID |
+| v0.2 | 2026-10-02 | 商品接口按商城化调整：创建草稿需提供 `price`；商品增加 `category` 字段；新增 #76a 分类列表；本迭代交付类型支持链接与文本（文件、卡密接口 #29～#33、#45～#51 待实现） |
+| v0.3 | 2026-10-02 | 新增商城与收藏接口 #76b～#76g、定时任务 `cron:market-hot`；“🔑 商家”鉴权在统一账号后适用于所有登录用户 |
