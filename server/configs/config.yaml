@@ -48,6 +48,10 @@ auth:
   verify_email_ttl: 24h
   reset_password_ttl: 30m
 
+security:
+  master_key: ""            # 通过 MK_SECURITY_MASTER_KEY 提供：openssl rand -base64 32
+  master_key_version: 1
+
 mail:
   host: 127.0.0.1           # 本地使用 Mailpit：http://127.0.0.1:8025 查看邮件
   port: 11025             # Docker Desktop 在本机绑定 1025 端口失败，改用高位端口

@@ -15,6 +15,7 @@ import (
 	"mkclou/server/internal/pkg/mailer"
 	"mkclou/server/internal/pkg/middleware"
 	"mkclou/server/internal/pkg/ratelimit"
+	"mkclou/server/internal/pkg/secure"
 	"mkclou/server/internal/pkg/storage"
 	"mkclou/server/internal/product"
 	"mkclou/server/internal/shop"
@@ -29,6 +30,7 @@ type Deps struct {
 	Redis  *redis.Client
 	Mail   mailer.Queue
 	Store  *storage.Client
+	Box    *secure.Box
 }
 
 func NewRouter(d Deps) *gin.Engine {
@@ -66,6 +68,7 @@ func NewRouter(d Deps) *gin.Engine {
 	shopSvc := shop.NewService(shop.Deps{
 		Repo: shop.NewRepository(d.DB), Merchants: merchantAccounts{userRepo}, Redis: d.Redis,
 		Assets: d.Store, Config: d.Config, Log: d.Log,
+		Payments: shop.NewPaymentRepository(d.DB), Tester: shop.AlipayTester{}, Box: d.Box,
 	})
 	imageSvc := upload.NewImageService(d.Store, d.Redis)
 	productSvc := product.NewService(product.Deps{

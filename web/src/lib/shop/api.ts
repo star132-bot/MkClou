@@ -1,8 +1,8 @@
-// 店铺接口（docs/api-list.md 2.2）。
+// 店铺与收款配置接口（docs/api-list.md 2.2）。
 import { api } from "@/lib/api/client";
 import type { ShopStatus } from "@/lib/storefront/types";
 
-import type { MerchantShop, Onboarding, ShopPatch, SlugCheck } from "./types";
+import type { MerchantShop, Onboarding, PaymentCredentials, PaymentView, ShopPatch, SlugCheck } from "./types";
 
 export const shopApi = {
   checkSlug: (slug: string) => api<SlugCheck>(`/shop/slug-availability?slug=${encodeURIComponent(slug)}`),
@@ -19,4 +19,11 @@ export const shopApi = {
   onboarding: () => api<Onboarding>("/shop/onboarding"),
 
   markShared: () => api<null>("/shop/onboarding/shared", { method: "POST" }),
+
+  // 收款配置（#25 ～ #27）
+  payment: () => api<PaymentView>("/shop/payment-config"),
+
+  testPayment: (body: PaymentCredentials) => api<{ ok: true }>("/shop/payment-config/test", { method: "POST", body }),
+
+  savePayment: (body: PaymentCredentials) => api<PaymentView>("/shop/payment-config", { method: "PUT", body }),
 };

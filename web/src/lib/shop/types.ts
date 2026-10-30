@@ -1,4 +1,4 @@
-// 店铺接口的数据类型，对应 docs/api-list.md #18 ～ #24（后端 internal/shop/model.go）。
+// 店铺接口的数据类型，对应 docs/api-list.md #18 ～ #27（后端 internal/shop/model.go）。
 import type { ShopStatus, ShopTheme, SocialLink } from "@/lib/storefront/types";
 
 /** 商家后台看到的店铺信息（GET /shop）。 */
@@ -41,3 +41,24 @@ export interface Onboarding {
 }
 
 export type ShopPatch = Partial<Pick<MerchantShop, "name" | "slug" | "description" | "contactEmail" | "socialLinks" | "theme">>;
+
+export type PaymentEnv = "SANDBOX" | "PRODUCTION";
+
+/** 收款配置状态（GET /shop/payment-config）。不含私钥，只返回末尾 6 位用于识别（PRD SHOP-04）。 */
+export interface PaymentView {
+  configured: boolean;
+  provider: "ALIPAY";
+  env: PaymentEnv | "";
+  appId: string;
+  privateKeyTail: string;
+  status: "ACTIVE" | "INVALID" | "";
+  verifiedAt: string | null;
+  lastError: string | null;
+}
+
+export interface PaymentCredentials {
+  env: PaymentEnv;
+  appId: string;
+  privateKey: string;
+  publicKey: string;
+}

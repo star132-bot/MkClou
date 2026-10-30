@@ -17,6 +17,7 @@ const nav = [
   { href: "/dashboard", label: "概览" },
   { href: "/dashboard/products", label: "商品" },
   { href: "/dashboard/shop", label: "店铺设置" },
+  { href: "/dashboard/payment", label: "收款设置" },
 ] as const;
 
 /** 站内链接：有未保存的修改时先弹窗确认（PRD 02 第 5 节）。 */

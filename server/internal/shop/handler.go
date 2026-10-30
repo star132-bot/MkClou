@@ -18,7 +18,7 @@ func NewHandler(svc *Service, limiter *ratelimit.Limiter) *Handler {
 	return &Handler{svc: svc, limiter: limiter}
 }
 
-// Register 注册路由（接口清单 #18 ～ #24、#72）。requireMerchant 是账号模块提供的鉴权中间件。
+// Register 注册路由（接口清单 #18 ～ #27、#72）。requireMerchant 是账号模块提供的鉴权中间件。
 func (h *Handler) Register(api *gin.RouterGroup, requireMerchant gin.HandlerFunc) {
 	m := api.Group("/shop", requireMerchant)
 	m.GET("/slug-availability", h.limiter.ByIP(ratelimit.PerMinute("slug-check", 60)), h.checkSlug)
@@ -28,6 +28,10 @@ func (h *Handler) Register(api *gin.RouterGroup, requireMerchant gin.HandlerFunc
 	m.PUT("/status", h.setStatus)
 	m.GET("/onboarding", h.onboarding)
 	m.POST("/onboarding/shared", h.markShared)
+	m.GET("/payment-config", h.payment)
+	// 测试与保存会实际调用支付宝接口，限制频率防止被用来刷接口
+	m.POST("/payment-config/test", h.limiter.ByIP(ratelimit.PerMinute("payment-test", 10)), h.testPayment)
+	m.PUT("/payment-config", h.limiter.ByIP(ratelimit.PerMinute("payment-save", 10)), h.savePayment)
 
 	api.GET("/public/shops/:slug", h.public)
 }
@@ -143,4 +147,51 @@ func (h *Handler) public(c *gin.Context) {
 		return
 	}
 	response.OK(c, r)
+}
+
+// ---------- 收款配置 ----------
+
+func (h *Handler) payment(c *gin.Context) {
+	v, err := h.svc.Payment(c.Request.Context(), merchantID(c))
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.OK(c, v)
+}
+
+type paymentRequest struct {
+	Env        string `json:"env"`
+	AppID      string `json:"appId"`
+	PrivateKey string `json:"privateKey"`
+	PublicKey  string `json:"publicKey"`
+}
+
+func (r paymentRequest) credentials() PaymentCredentials {
+	return PaymentCredentials{Env: r.Env, AppID: r.AppID, PrivateKey: r.PrivateKey, PublicKey: r.PublicKey}
+}
+
+func (h *Handler) testPayment(c *gin.Context) {
+	var req paymentRequest
+	if !bind(c, &req) {
+		return
+	}
+	if err := h.svc.TestPayment(c.Request.Context(), merchantID(c), req.credentials()); err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.OK(c, gin.H{"ok": true})
+}
+
+func (h *Handler) savePayment(c *gin.Context) {
+	var req paymentRequest
+	if !bind(c, &req) {
+		return
+	}
+	v, err := h.svc.SavePayment(c.Request.Context(), merchantID(c), req.credentials())
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+	response.OK(c, v)
 }

@@ -18,6 +18,7 @@ import (
 	"mkclou/server/internal/pkg/database"
 	"mkclou/server/internal/pkg/logger"
 	"mkclou/server/internal/pkg/mailer"
+	"mkclou/server/internal/pkg/secure"
 	"mkclou/server/internal/pkg/storage"
 	"mkclou/server/internal/server"
 )
@@ -64,8 +65,13 @@ func run() error {
 	}
 	cancelBuckets()
 
+	box, err := secure.NewBox(cfg.Security.MasterKey, cfg.Security.MasterKeyVersion)
+	if err != nil {
+		return fmt.Errorf("init secure box: %w", err)
+	}
+
 	router := server.NewRouter(server.Deps{
-		Config: cfg, Log: log, DB: db, Redis: rdb, Mail: mailer.NewAsynqQueue(taskClient), Store: store,
+		Config: cfg, Log: log, DB: db, Redis: rdb, Mail: mailer.NewAsynqQueue(taskClient), Store: store, Box: box,
 	})
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", cfg.App.Port),

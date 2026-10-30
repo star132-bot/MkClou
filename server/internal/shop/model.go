@@ -1,7 +1,7 @@
 // Package shop 实现店铺模块（PRD 02，接口清单 #18 ～ #24、#72）。
 //
 // 分层：handler（HTTP）→ service（业务规则）→ repository（MySQL）；买家端店铺信息使用 Redis 缓存（Cache Aside）。
-// 收款配置（SHOP-04，接口 #25 ～ #27）与图片上传（#28）在后续迭代中实现。
+// 收款配置（SHOP-04，接口 #25 ～ #27）见 payment.go。
 package shop
 
 import "time"

@@ -79,6 +79,7 @@ pnpm dev                             # http://localhost:3000
 | server | `python scripts/e2e/shop_e2e.py` | 店铺模块端到端测试（需先启动 API） |
 | server | `python scripts/e2e/product_e2e.py` | 商品模块端到端测试（需先启动 API 与 worker） |
 | server | `python scripts/e2e/market_e2e.py` | 商城首页、搜索、收藏端到端测试（需先启动 API 与 worker） |
+| server | `python scripts/e2e/payment_e2e.py` | 收款配置端到端测试（需先启动 API，会访问支付宝沙箱网关） |
 | web | `pnpm lint` | ESLint 检查 |
 | web | `pnpm exec tsc --noEmit` | 类型检查 |
 | web | `pnpm build` | 生产构建 |

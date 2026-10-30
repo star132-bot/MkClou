@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, ExternalLink, Plus, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { RadioGroup } from "radix-ui";
@@ -533,7 +534,11 @@ export function ProductEditor({ initial }: { initial: EditableProduct }) {
                   ) : is.field === "account" ? (
                     <span className="shrink-0 text-caption text-text-tertiary">见页面顶部提示</span>
                   ) : (
-                    <span className="shrink-0 text-caption text-text-tertiary">收款设置即将开放</span>
+                    <Button variant="link" size="sm" asChild>
+                      <Link href="/dashboard/payment" target="_blank">
+                        去配置
+                      </Link>
+                    </Button>
                   )}
                 </li>
               );

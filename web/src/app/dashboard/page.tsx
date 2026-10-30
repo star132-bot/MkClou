@@ -166,8 +166,8 @@ function OnboardingChecklist({ data, onCopy }: { data: Onboarding; onCopy: () =>
     <Button key="email" variant="outline" size="sm" onClick={resend} disabled={sending}>
       {sending ? "发送中…" : "重新发送邮件"}
     </Button>,
-    <Button key="pay" variant="outline" size="sm" disabled title="收款设置即将开放">
-      去配置
+    <Button key="pay" variant="outline" size="sm" asChild>
+      <GuardedLink href="/dashboard/payment">去配置</GuardedLink>
     </Button>,
     <Button key="product" variant="outline" size="sm" asChild>
       <GuardedLink href="/dashboard/products">去上架</GuardedLink>

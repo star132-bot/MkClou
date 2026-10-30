@@ -14,6 +14,7 @@ import (
 
 	"mkclou/server/internal/pkg/config"
 	"mkclou/server/internal/pkg/errcode"
+	"mkclou/server/internal/pkg/secure"
 )
 
 // Merchants 读取商家账号信息。由账号模块实现，避免店铺模块直接依赖 user 包。
@@ -36,6 +37,10 @@ type Service struct {
 	log       *zap.Logger
 	reserved  map[string]bool
 	now       func() time.Time
+
+	payments PaymentRepository
+	tester   PaymentTester
+	box      *secure.Box
 }
 
 type Deps struct {
@@ -45,6 +50,10 @@ type Deps struct {
 	Assets    Assets
 	Config    *config.Config
 	Log       *zap.Logger
+	// 收款配置（payment.go）
+	Payments PaymentRepository
+	Tester   PaymentTester
+	Box      *secure.Box
 }
 
 func NewService(d Deps) *Service {
@@ -61,6 +70,9 @@ func NewService(d Deps) *Service {
 		log:       d.Log,
 		reserved:  reserved,
 		now:       time.Now,
+		payments:  d.Payments,
+		tester:    d.Tester,
+		box:       d.Box,
 	}
 }
 

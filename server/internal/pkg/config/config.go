@@ -12,14 +12,22 @@ import (
 )
 
 type Config struct {
-	App   AppConfig   `mapstructure:"app"`
-	Log   LogConfig   `mapstructure:"log"`
-	MySQL MySQLConfig `mapstructure:"mysql"`
-	Redis RedisConfig `mapstructure:"redis"`
-	S3    S3Config    `mapstructure:"s3"`
-	Auth  AuthConfig  `mapstructure:"auth"`
-	Mail  MailConfig  `mapstructure:"mail"`
-	Shop  ShopConfig  `mapstructure:"shop"`
+	App      AppConfig      `mapstructure:"app"`
+	Log      LogConfig      `mapstructure:"log"`
+	MySQL    MySQLConfig    `mapstructure:"mysql"`
+	Redis    RedisConfig    `mapstructure:"redis"`
+	S3       S3Config       `mapstructure:"s3"`
+	Auth     AuthConfig     `mapstructure:"auth"`
+	Mail     MailConfig     `mapstructure:"mail"`
+	Shop     ShopConfig     `mapstructure:"shop"`
+	Security SecurityConfig `mapstructure:"security"`
+}
+
+// SecurityConfig 是敏感数据加密配置（PRD SEC-06）。
+type SecurityConfig struct {
+	// MasterKey 是 Base64 编码的 32 字节主密钥，用于加密商家支付私钥、卡密等；只通过环境变量提供
+	MasterKey        string `mapstructure:"master_key"`
+	MasterKeyVersion int16  `mapstructure:"master_key_version"`
 }
 
 type AppConfig struct {
@@ -140,6 +148,9 @@ func (c *Config) validate() error {
 	}
 	if c.Redis.Password == "" {
 		missing = append(missing, "MK_REDIS_PASSWORD")
+	}
+	if c.Security.MasterKey == "" {
+		missing = append(missing, "MK_SECURITY_MASTER_KEY (32 bytes, base64)")
 	}
 	if len(c.Auth.JWTSecret) < 32 {
 		missing = append(missing, "MK_AUTH_JWT_SECRET (at least 32 characters)")
